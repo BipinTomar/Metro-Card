@@ -10,7 +10,7 @@ public class Main {
         System.out.println("Hello World");
 
         /*
-        Sample code to read from file passed as command line argument
+        Sample code to yuread from file passed as command line argument
         try {
             // the file to be opened for reading
             FileInputStream fis = new FileInputStream(args[0]);
