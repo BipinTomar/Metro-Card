@@ -1,4 +1,4 @@
-package com.example.geektrust.Model;
+package com.example.geektrust.Exception;
 
 public class Passenger {
 
