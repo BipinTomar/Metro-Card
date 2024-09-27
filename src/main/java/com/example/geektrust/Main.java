@@ -1,47 +1,99 @@
 package com.example.geektrust;
 
-import com.example.geektrust.Model.MetroCard;
-import com.example.geektrust.Model.MetroSystem;
-import com.example.geektrust.Model.Passenger;
-import com.example.geektrust.Model.PassengerType;
+
+
+import com.example.geektrust.Exception.*;
+
+import java.io.BufferedReader;
+import java.io.FileReader;
+import java.io.IOException;
+
 
 public class Main {
+
     public static void main(String[] args) {
-        System.out.println("Hello World");
-
-        /*
-        Sample code tggo read from file passed as command line argument
-        try {
-            // the file to be opened for reading
-            FileInputStream fis = new FileInputStream(args[0]);
-            Scanner sc = new Scanner(fis); // file to be scanned
-            // returns true if there is another line to read
-            while (sc.hasNextLine()) {
-               //Add your code here to process input commands
-            }
-            sc.close(); // closes the scanner
-        } catch (IOException e) {
+        if (args.length < 1) {
+            System.out.println("Usage: java MetroApp <input_file_path>");
+            return;
         }
-        */
 
-
+        String inputFilePath = args[0];
         MetroSystem metroSystem = new MetroSystem();
 
-        MetroCard card1 = new MetroCard("MC001", 150);
-        MetroCard card2 = new MetroCard("MC002", 50);
-        MetroCard card3 = new MetroCard("MC003", 20);
-
-        Passenger p1 = new Passenger("John", PassengerType.ADULT, card1);
-        Passenger p2 = new Passenger("Alice", PassengerType.SENIOR_CITIZEN, card2);
-        Passenger p3 = new Passenger("Bob", PassengerType.KID, card3);
-
-        metroSystem.travel(p1, "Central", "Airport", false);
-        metroSystem.travel(p2, "Central", "Airport", true);
-        metroSystem.travel(p3, "Airport", "Central", false);
-        metroSystem.travel(p1, "Airport", "Central", false);
-        metroSystem.travel(p2, "Airport", "Central", false);
-
-        metroSystem.printCollectionSummary();
-        metroSystem.printPassengerSummary();
+        try (BufferedReader br = new BufferedReader(new FileReader(inputFilePath))) {
+            String line;
+            while ((line = br.readLine()) != null) {
+                processCommand(line, metroSystem);
+            }
+        } catch (IOException e) {
+            System.out.println("Error reading the input file: " + e.getMessage());
+        }
     }
+
+    public static void processCommand(String command, MetroSystem metroSystem) {
+        String[] tokens = command.split(" ");
+
+        if (tokens.length == 0) {
+            System.out.println("Empty command");
+            return;
+        }
+
+        switch (tokens[0]) {
+            case "ADD_PASSENGER":
+                if (tokens.length < 5) {
+                    System.out.println("Invalid ADD_PASSENGER command format");
+                    return;
+                }
+                String name = tokens[1];
+                PassengerType type = PassengerType.valueOf(tokens[2]);
+                String cardId = tokens[3];
+                double initialBalance = Double.parseDouble(tokens[4]);
+                MetroCard metroCard = new MetroCard(cardId, initialBalance);
+                Passenger passenger = new Passenger(name, type, metroCard);
+                metroSystem.addPassenger(passenger);
+                break;
+
+            case "RECHARGE":
+                if (tokens.length < 3) {
+                    System.out.println("Invalid RECHARGE command format");
+                    return;
+                }
+                String cardIdRecharge = tokens[1];
+                double amount = Double.parseDouble(tokens[2]);
+                metroSystem.rechargeMetroCard(cardIdRecharge, amount);
+                break;
+
+            case "TRAVEL":
+                if (tokens.length < 5) {
+                    System.out.println("Invalid TRAVEL command format");
+                    return;
+                }
+                String cardIdTravel = tokens[1];
+                String startStation = tokens[2];
+                String endStation = tokens[3];
+                boolean isReturn = Boolean.parseBoolean(tokens[4]);
+                metroSystem.travel(cardIdTravel, startStation, endStation, isReturn);
+
+                break;
+
+            case "PRINT_COLLECTION_SUMMARY":
+                metroSystem.printCollectionSummary();
+                break;
+
+            case "PRINT_PASSENGER_SUMMARY":
+                metroSystem.printPassengerSummary();
+                break;
+
+            case "PRINT_TRANSACTION_HISTORY":
+                String cardIdTransaction = tokens[1];
+                metroSystem.printTransactionHistory(cardIdTransaction);
+                break;
+
+            default:
+                System.out.println("Unknown command: " + command);
+        }
+    }
+
 }
+
+

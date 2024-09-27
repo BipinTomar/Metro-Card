@@ -1,0 +1,3 @@
+Transaction History:
+Add a feature to log and display the transaction history of each passenger, including recharges, journeys, and fare deductions.
+Implement a command like PRINT_TRANSACTION_HISTORY <passenger_id> to output a passenger's transaction history.

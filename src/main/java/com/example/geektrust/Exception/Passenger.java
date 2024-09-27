@@ -1,12 +1,16 @@
 package com.example.geektrust.Exception;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class Passenger {
 
     private String name;
     private PassengerType type;
     private MetroCard metroCard;
 
-    public Passenger(String name, PassengerType type, MetroCard metroCard) {
+
+    public Passenger(String name, PassengerType type, MetroCard metroCard ) {
         this.name = name;
         this.type = type;
         this.metroCard = metroCard;
@@ -24,6 +28,8 @@ public class Passenger {
         this.metroCard = metroCard;
     }
 
+
+
     public String getName() {
         return name;
     }
@@ -35,4 +41,5 @@ public class Passenger {
     public MetroCard getMetroCard() {
         return metroCard;
     }
+
 }

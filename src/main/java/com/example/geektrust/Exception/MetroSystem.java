@@ -1,4 +1,4 @@
-package com.example.geektrust.Model;
+package com.example.geektrust.Exception;
 
 import java.util.*;
 
@@ -15,6 +15,9 @@ public class MetroSystem {
     private List<Journey> journeys = new ArrayList<>();
     private Map<PassengerType, Integer> passengerCount = new EnumMap<>(PassengerType.class);
 
+    //these are metro card IDs with passengers object in a map
+    private Map<String , Passenger> passengers = new HashMap<>();
+
     public MetroSystem() {
         stations.put("Central", new Station("Central"));
         stations.put("Airport", new Station("Airport"));
@@ -22,6 +25,35 @@ public class MetroSystem {
             passengerCount.put(type, 0);
         }
     }
+
+    public void addPassenger(Passenger passenger)
+    {
+
+        passengers.put(passenger.getMetroCard().getId() , passenger);
+    }
+
+
+
+    public void rechargeMetroCard(String cardId, double amount){
+        Passenger passenger = passengers.get(cardId);
+
+        if(passenger != null)
+        {
+            passenger.getMetroCard().recharge(amount);
+        }
+        else {
+            System.out.println("No passenger found with card ID: " + cardId);
+        }
+    }
+    public void travel(String cardId, String startStation, String endStation, boolean isReturn) {
+        Passenger passenger = passengers.get(cardId);
+        if (passenger == null) {
+            System.out.println("No passenger found with card ID: " + cardId);
+            return;
+        }
+        travel(passenger, startStation, endStation, isReturn);
+    }
+
 
 
     public void travel(Passenger passenger, String startStation, String endStation, boolean isReturn){
@@ -44,7 +76,6 @@ public class MetroSystem {
         if (isReturn) {
             station.addDiscount(fare * RETURN_DISCOUNT);
         }
-
         //increasing the passenger count according to the passenger type
         passengerCount.put(passenger.getType(), passengerCount.get(passenger.getType()) +1);
 
@@ -69,30 +100,43 @@ public class MetroSystem {
 
 
     public void printCollectionSummary() {
-        System.out.println("Collection Summary:");
+        System.out.println("Collection Summary: ************************");
 
         for(Station station: stations.values())
         {
-            System.out.println( " Station contains Central True/False : " + stations.containsKey("Central"));
+//            System.out.println( " Station contains Central True/False : " + stations.containsKey("Central"));
 
             System.out.println(station.getName() + " - Total Collection : " + station.getTotalCollection() + ", Total Discount : " + station.getTotalDiscount());
         }
 
     }
 
+    public void printTransactionHistory(String cardId)
+    {
+        System.out.println("Transaction History Passengers");
+
+    }
     public void printPassengerSummary() {
-        System.out.println("Passenger Summary:");
-        List<Map.Entry<PassengerType, Integer>> list = new ArrayList<>(passengerCount.entrySet());
+        System.out.println("Passenger Travel Summary: ************************");
+        List<Map.Entry<PassengerType, Integer>> listPassengersCount = new ArrayList<>(passengerCount.entrySet());
+        List<Map.Entry<String, Passenger>> listPassengers = new ArrayList<>(passengers.entrySet());
+
 
         //here b comes earlier for descending order
-        list.sort((a, b) -> {
+        listPassengersCount.sort((a, b) -> {
             int cmp = Integer.compare(b.getValue(), a.getValue());
             return cmp == 0 ? a.getKey().compareTo(b.getKey()) : cmp;
         });
 
-        for (Map.Entry<PassengerType, Integer> entry : list) {
+        for (Map.Entry<PassengerType, Integer> entry : listPassengersCount) {
             System.out.println(entry.getKey() + " " + entry.getValue());
         }
+        System.out.println("Passenger Summary:  ************************");
+
+        for (Map.Entry<String, Passenger> entry : listPassengers) {
+            System.out.println( entry.getValue().getType() + " " + entry.getValue().getName()  + " "  + entry.getKey());
+        }
+
     }
 
 

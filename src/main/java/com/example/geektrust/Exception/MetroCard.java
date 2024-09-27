@@ -1,4 +1,6 @@
-package com.example.geektrust.Model;
+package com.example.geektrust.Exception;
+
+import java.util.List;
 
 public class MetroCard {
         private String id;
